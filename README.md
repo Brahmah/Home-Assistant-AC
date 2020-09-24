@@ -16,3 +16,6 @@ Home Assistant Compatible AC Retrofit.
 
 ## Circuit
 Pins should go to optocouplers that essentially simulate actual button presses.
+
+## Home Assistant Config
+Add code and modify to suit your needs.
