@@ -1,0 +1,3 @@
+shell_command:
+  set_ac_fan_speed: "/usr/bin/curl http://<esp-ip>/get?fan_speed={{ state }}"
+  set_ac_mode: "/usr/bin/curl http://<esp-ip>/get?mode_type={{ state }}"
