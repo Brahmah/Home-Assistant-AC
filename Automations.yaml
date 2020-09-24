@@ -1,0 +1,60 @@
+- id: '1599305045830'
+  alias: AC Sync Service
+  description: Sync from HA to A/C Controller
+  trigger:
+  - entity_id: input_number.fan_speed
+    platform: state
+  - entity_id: input_select.ac_mode
+    platform: state
+  - platform: time_pattern
+    minutes: '/2'
+  condition: []
+  action:
+    - service: shell_command.set_ac_fan_speed
+      data_template:
+        state: "{{ states.input_number.fan_speed.state }}"
+    - delay: 00:00:01    
+    - service: shell_command.set_ac_fan_speed
+      data_template:
+        state: "{{ states.input_number.fan_speed.state }}"
+    - delay: 00:00:04
+    - service: shell_command.set_ac_mode
+      data_template:
+        state: '{% if is_state("input_select.ac_mode", "Fan") %} 1
+        {% elif is_state("input_select.ac_mode", "Cool") %} 2
+        {% elif is_state("input_select.ac_mode", "Exhaust") %} 3
+        {% elif is_state("input_select.ac_mode", "Fire Mode") %} 4
+        {% endif %}
+        '
+    - delay: 00:00:05
+    - service: shell_command.set_ac_fan_speed
+      data_template:
+        state: "{{ states.input_number.fan_speed.state }}"
+  mode: single
+  
+- id: '1599328045930'
+  alias: AC Off Sync Service
+  description: Sync from HA to A/C Controller
+  trigger:
+  - entity_id: input_select.ac_mode
+    platform: state
+    to: "Off"
+  - platform: time_pattern
+    minutes: '/1'
+  condition: 
+    - condition: state
+      entity_id: input_select.ac_mode
+      state: "Off"
+  action:
+    - service: shell_command.set_ac_mode
+      data_template:
+        state: '{% if is_state("input_select.ac_mode", "Off") %} 0
+        {% endif %}
+        '
+    - delay: 00:00:05
+    - service: shell_command.set_ac_mode
+      data_template:
+        state: '{% if is_state("input_select.ac_mode", "Off") %} 0
+        {% endif %}
+        '
+  mode: single
